@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="PowerForecast - Create your account to start tracking and forecasting your electricity consumption.">
+    <!-- PWA Metadata & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0c16">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PowerForecast">
+    <link rel="apple-touch-icon" href="Assets/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Assets/icons/favicon-32x32.png">
     <title>PowerForecast — Sign Up</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -923,5 +932,7 @@
         `;
         document.head.appendChild(styleSheet);
     </script>
+    <!-- PWA Support Script -->
+    <script src="pwa-install.js"></script>
 </body>
 </html>

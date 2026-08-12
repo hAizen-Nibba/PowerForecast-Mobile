@@ -6,6 +6,7 @@
 
 ## ✨ Features
 
+- 📱 **Progressive Web App (PWA)**: Installable on mobile and desktop devices, complete with offline support, service worker caching, custom install prompts, and app manifest.
 - ⚡ **Dynamic Meralco Rate Parser**: Automatically fetches and extracts effective rates and Base Generation Charges from official Meralco PDF bulletins.
 - 🌐 **Vercel Serverless API**: Ready for Vercel deployment with CORS-enabled endpoints (`/api/rates`, `/api/appliances`, `/api/calculate`).
 - 📊 **Interactive Web Calculator**: Modern glassmorphic front-end displaying itemized bill breakdowns, stacked cost distribution bars, and consumption sliders.

@@ -8,7 +8,6 @@ const PRECACHE_ASSETS = [
   './signup.html',
   './forgot-password.html',
   './docs.html',
-  './landing.html',
   './manifest.json',
   './pwa-install.js',
   './rates.json',

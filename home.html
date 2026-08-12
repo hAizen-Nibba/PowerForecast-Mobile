@@ -145,10 +145,10 @@
         /* ===== Hanging Light Bulb Component ===== */
         .bulb-hanging-wrapper {
             position: fixed;
-            top: 0;
-            left: 58%;
+            top: -25px;
+            left: calc(50% + 120px);
             transform: translateX(-50%);
-            z-index: 15;
+            z-index: 5;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -157,26 +157,29 @@
             transition: transform 0.3s ease;
         }
         .bulb-hanging-wrapper:hover {
-            transform: translateX(-50%) translateY(4px);
+            transform: translateX(-50%) translateY(6px);
         }
         .bulb-cord {
-            width: 3px;
-            height: 64px;
-            background: linear-gradient(to bottom, #334155, #64748b, #1e293b);
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+            width: 4px;
+            height: 35px;
+            background: linear-gradient(to bottom, #1e293b, #64748b, #334155);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
         .bulb-bg-container {
             position: relative;
-            width: 270px;
-            height: 270px;
-            margin-top: -18px;
+            width: min(440px, 34vw);
+            height: min(600px, 65vh);
+            margin-top: -12px;
         }
         .bulb-img {
             position: absolute;
-            inset: 0;
-            width: 100%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
             height: 100%;
+            width: auto;
             object-fit: contain;
+            filter: drop-shadow(0 20px 50px rgba(0, 0, 0, 0.45));
             transition: opacity var(--transition-speed) var(--transition-ease);
         }
         .bulb-off { opacity: 1; }
@@ -187,14 +190,14 @@
 
         .bulb-aura {
             position: absolute;
-            top: 55%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 320px;
-            height: 320px;
+            width: min(480px, 36vw);
+            height: min(480px, 36vw);
             border-radius: 50%;
             background: var(--bulb-glow);
-            filter: blur(65px);
+            filter: blur(75px);
             pointer-events: none;
             transition: background var(--transition-speed) var(--transition-ease);
         }

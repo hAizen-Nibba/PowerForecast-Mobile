@@ -32,6 +32,9 @@ class PowerForecastServerHandler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
 
+        if path == '/':
+            self.path = '/index.html'
+
         if path in ['/api/rates', '/api/rates.py']:
             self.handle_api_rates()
         elif path in ['/api/appliances', '/api/appliances.py']:

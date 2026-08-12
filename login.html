@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PowerForecast - Smart energy forecasting and power consumption calculator. Login to manage your electricity usage.">
+    <title>PowerForecast — Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('powerforecast_theme');
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+    <style>
+        /* ===== CSS Reset & Base ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --transition-speed: 0.6s;
+            --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== DARK THEME (default) ===== */
+        [data-theme="dark"] {
+            --bg-top: #1a1072;
+            --bg-mid: #2b2bae;
+            --bg-bottom: #5b8ef5;
+            --card-bg: rgba(20, 18, 80, 0.85);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --input-bg: #ffffff;
+            --input-text: #333333;
+            --input-placeholder: #888888;
+            --input-border: transparent;
+            --btn-bg: #0d0d5e;
+            --btn-hover-bg: #16167a;
+            --btn-text: #ffffff;
+            --forgot-color: #ffd54f;
+            --divider-color: rgba(255, 255, 255, 0.25);
+            --or-color: #ffd54f;
+            --link-color: #ffd54f;
+            --toggle-bg: #555555;
+            --toggle-active-bg: #6c7ae0;
+            --toggle-knob: #ffffff;
+            --toggle-label-color: #ffffff;
+            --logo-text-color: #ffffff;
+            --google-btn-bg: #ffffff;
+            --google-btn-border: transparent;
+            --google-btn-text: #333333;
+        }
+
+        /* ===== LIGHT THEME ===== */
+        [data-theme="light"] {
+            --bg-top: #ffffff;
+            --bg-mid: #f0f0ff;
+            --bg-bottom: #8a7fd6;
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --card-border: rgba(108, 122, 224, 0.2);
+            --card-shadow: 0 10px 35px rgba(26, 16, 114, 0.12);
+            --text-primary: #100b46;
+            --text-secondary: #3d3e75;
+            --input-bg: #ffffff;
+            --input-text: #1a1072;
+            --input-placeholder: #7778a8;
+            --input-border: rgba(108, 122, 224, 0.25);
+            --btn-bg: #1a1072;
+            --btn-hover-bg: #2b2bae;
+            --btn-text: #ffffff;
+            --forgot-color: #5a5cc7;
+            --divider-color: rgba(108, 122, 224, 0.2);
+            --or-color: #5a5cc7;
+            --link-color: #4a49a2;
+            --toggle-bg: #ccc;
+            --toggle-active-bg: #6c7ae0;
+            --toggle-knob: #ffffff;
+            --toggle-label-color: #1a1072;
+            --logo-text-color: #1a1072;
+            --google-btn-bg: #ffffff;
+            --google-btn-border: rgba(108, 122, 224, 0.2);
+            --google-btn-text: #333333;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            transition: background var(--transition-speed) var(--transition-ease);
+        }
+
+        /* ===== Background ===== */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            transition: opacity var(--transition-speed) var(--transition-ease);
+        }
+
+        .bg-dark {
+            background: linear-gradient(180deg, #1a1072 0%, #2b2bae 40%, #5b8ef5 100%);
+            opacity: 1;
+        }
+
+        .bg-light {
+            background: linear-gradient(180deg, #ffffff 0%, #f5f5ff 45%, #d8d4f0 70%, #8a7fd6 100%);
+            opacity: 0;
+        }
+
+        [data-theme="light"] .bg-dark { opacity: 0; }
+        [data-theme="light"] .bg-light { opacity: 1; }
+
+        /* ===== Main Layout ===== */
+        .login-page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* ===== Header / Navbar ===== */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: clamp(16px, 3vh, 24px) clamp(20px, 4vw, 48px);
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-area img {
+            width: clamp(38px, 4vw, 50px);
+            height: auto;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+        }
+
+        .logo-area span {
+            font-size: clamp(1.25rem, 2vw, 1.6rem);
+            font-weight: 700;
+            color: var(--logo-text-color);
+            letter-spacing: -0.02em;
+            transition: color var(--transition-speed) var(--transition-ease);
+        }
+
+        /* ===== Theme Toggle ===== */
+        .theme-toggle-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-label {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--toggle-label-color);
+            transition: color var(--transition-speed) var(--transition-ease);
+            user-select: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 58px;
+            height: 32px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--toggle-bg);
+            border-radius: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 26px;
+            height: 26px;
+            background: var(--toggle-knob);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--toggle-active-bg);
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(26px);
+        }
+
+        /* ===== Content Area ===== */
+        .content-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: clamp(10px, 2vh, 40px) clamp(20px, 5vw, 100px);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== Bulb Image (Resilient Viewport Sizing) ===== */
+        .bulb-container {
+            position: fixed;
+            top: max(-40px, -4vh);
+            left: clamp(180px, 28vw, 450px);
+            transform: translateX(-50%);
+            z-index: 1;
+            pointer-events: none;
+            width: min(500px, 42vw);
+            height: min(720px, 82vh);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .bulb-img {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 100%;
+            max-height: min(680px, 78vh);
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.3));
+            transition: opacity 0.5s var(--transition-ease);
+        }
+
+        .bulb-off { opacity: 1; }
+        .bulb-on { opacity: 0; }
+
+        [data-theme="light"] .bulb-off { opacity: 0; }
+        [data-theme="light"] .bulb-on { opacity: 1; }
+
+        /* Glow effect for light mode */
+        .bulb-glow {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(480px, 38vw);
+            height: min(480px, 38vw);
+            max-width: 480px;
+            max-height: 480px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 200, 80, 0.35) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.6s var(--transition-ease);
+            pointer-events: none;
+        }
+
+        [data-theme="light"] .bulb-glow {
+            opacity: 1;
+        }
+
+        /* ===== Login Card ===== */
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            min-width: 0;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: clamp(24px, 4vh, 46px) clamp(20px, 4vw, 42px);
+            box-shadow: var(--card-shadow), 0 0 0 1px rgba(255,255,255,0.05) inset;
+            transition: background var(--transition-speed) var(--transition-ease),
+                        border-color var(--transition-speed) var(--transition-ease),
+                        box-shadow var(--transition-speed) var(--transition-ease);
+            z-index: 5;
+        }
+
+        /* Google Button */
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 230px;
+            margin: 0 auto 28px;
+            padding: 12px 24px;
+            background: var(--google-btn-bg);
+            border: 1px solid var(--google-btn-border);
+            border-radius: 24px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--google-btn-text);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background var(--transition-speed) var(--transition-ease), border-color var(--transition-speed) var(--transition-ease);
+        }
+
+        .google-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+        }
+
+        .google-btn:active {
+            transform: translateY(0);
+        }
+
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 26px;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--divider-color);
+        }
+
+        .divider-text {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--or-color);
+        }
+
+        /* Input Groups */
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-group .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #888;
+            pointer-events: none;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px 14px 48px;
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            background: var(--input-bg);
+            color: var(--input-text);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: background var(--transition-speed) var(--transition-ease),
+                        border-color var(--transition-speed) var(--transition-ease),
+                        color var(--transition-speed) var(--transition-ease),
+                        box-shadow 0.2s ease;
+        }
+
+        .input-group.password-group input {
+            padding-right: 48px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: #555;
+        }
+
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+            border: none;
+            border-radius: 10px;
+            background: var(--input-bg);
+            color: var(--input-text);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .input-group input::placeholder {
+            color: var(--input-placeholder);
+        }
+
+        .input-group input:focus {
+            box-shadow: 0 0 0 2px rgba(108, 122, 224, 0.5);
+        }
+
+        /* Forgot Password */
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+            margin-top: 4px;
+        }
+
+        .forgot-password a {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--forgot-color);
+            text-decoration: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .forgot-password a:hover {
+            opacity: 0.8;
+        }
+
+        /* Remember Me */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #6c7ae0;
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--btn-bg);
+            color: #ffffff;
+            border: none;
+            border-radius: 28px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-btn:hover {
+            background: var(--btn-hover-bg);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Sign Up */
+        .signup-text {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+        }
+
+        .signup-text a {
+            color: var(--link-color);
+            text-decoration: underline;
+            font-weight: 600;
+            transition: opacity 0.2s ease;
+        }
+
+        .signup-text a:hover {
+            opacity: 0.8;
+        }
+
+        /* ===== Responsive & Display-Ratio Media Queries ===== */
+        @media (max-height: 750px) {
+            .navbar {
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+            .content-area {
+                padding-bottom: 20px;
+            }
+            .google-btn {
+                margin-bottom: 18px;
+            }
+            .divider {
+                margin-bottom: 18px;
+            }
+            .input-group {
+                margin-bottom: 12px;
+            }
+            .remember-me {
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 960px) {
+            .content-area {
+                justify-content: center;
+                padding: 20px;
+            }
+
+            .bulb-container {
+                left: 50%;
+                width: min(340px, 70vw);
+                height: min(450px, 50vh);
+                opacity: 0.18;
+            }
+
+            .bulb-img {
+                max-height: 420px;
+            }
+
+            .login-card {
+                width: 100%;
+                max-width: 420px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 14px 16px;
+            }
+
+            .login-card {
+                padding: 24px 18px;
+                border-radius: 16px;
+            }
+
+            .logo-area span {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ===== Entrance Animation ===== */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .login-card {
+            animation: fadeSlideUp 0.7s ease-out both;
+            animation-delay: 0.15s;
+        }
+
+        .bulb-container {
+            animation: fadeIn 0.8s ease-out both;
+            animation-delay: 0.05s;
+        }
+
+        .navbar {
+            animation: fadeIn 0.6s ease-out both;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background layers for smooth transition -->
+    <div class="bg-layer bg-dark"></div>
+    <div class="bg-layer bg-light"></div>
+
+    <div class="login-page">
+        <!-- Navbar -->
+        <nav class="navbar" id="navbar">
+            <div class="logo-area">
+                <img src="Assets/LOGO.png" alt="PowerForecast Logo" id="logo-img">
+                <span>powerforecast</span>
+            </div>
+            <div class="theme-toggle-area">
+                <span class="theme-label" id="theme-label">Dark</span>
+                <label class="toggle-switch" id="theme-toggle">
+                    <input type="checkbox" id="theme-checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </nav>
+
+        <!-- Bulb (Fixed wallpaper layer) -->
+        <div class="bulb-container">
+            <div class="bulb-glow"></div>
+            <img src="Assets/Off.png" alt="Bulb Off" class="bulb-img bulb-off" id="bulb-off">
+            <img src="Assets/On.png" alt="Bulb On" class="bulb-img bulb-on" id="bulb-on">
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+
+            <!-- Login Card -->
+            <div class="login-card" id="login-card">
+                <!-- Google Sign In -->
+                <button class="google-btn" id="google-signin-btn" type="button">
+                    <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+                    Google
+                </button>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <div class="divider-line"></div>
+                    <span class="divider-text">or</span>
+                    <div class="divider-line"></div>
+                </div>
+
+                <!-- Email -->
+                <div class="input-group">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="M22 4L12 13L2 4"/>
+                    </svg>
+                    <input type="email" id="email-input" placeholder="Email" autocomplete="email">
+                </div>
+
+                <!-- Password -->
+                <div class="input-group password-group">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <input type="password" id="password-input" placeholder="Password" autocomplete="current-password">
+                    <button type="button" class="password-toggle" id="password-toggle" aria-label="Toggle password visibility">
+                        <!-- Eye open (visible when password is hidden) -->
+                        <svg id="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <!-- Eye closed (visible when password is shown) -->
+                        <svg id="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                            <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                            <line x1="1" y1="1" x2="23" y2="23"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Forgot Password -->
+                <div class="forgot-password">
+                    <a href="forgot-password.html" id="forgot-password-link">Forgot Password?</a>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="remember-me">
+                    <input type="checkbox" id="remember-me-checkbox">
+                    <label for="remember-me-checkbox">Remember me</label>
+                </div>
+
+                <!-- Login Button -->
+                <button class="login-btn" id="login-btn" type="button">Login</button>
+
+                <!-- Sign Up -->
+                <p class="signup-text">New to the ball? <a href="signup.html" id="signup-link">Sign up!</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle
+        const themeCheckbox = document.getElementById('theme-checkbox');
+        const themeLabel = document.getElementById('theme-label');
+        const html = document.documentElement;
+
+        // Default to dark (checkbox checked = dark mode ON)
+        function setTheme(isDark) {
+            if (isDark) {
+                html.setAttribute('data-theme', 'dark');
+                themeLabel.textContent = 'Dark';
+                themeCheckbox.checked = true;
+                localStorage.setItem('powerforecast_theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeLabel.textContent = 'Light';
+                themeCheckbox.checked = false;
+                localStorage.setItem('powerforecast_theme', 'light');
+            }
+        }
+
+        themeCheckbox.addEventListener('change', () => {
+            setTheme(themeCheckbox.checked);
+        });
+
+        // Initialize from localStorage or default to dark
+        const savedTheme = localStorage.getItem('powerforecast_theme');
+        setTheme(savedTheme ? savedTheme === 'dark' : true);
+
+        // Test credentials
+        const TEST_EMAIL = '123@gmail.com';
+        const TEST_PASSWORD = '11111111';
+
+        // Login button action
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const email = document.getElementById('email-input').value.trim();
+            const password = document.getElementById('password-input').value.trim();
+            const card = document.getElementById('login-card');
+
+            if (!email || !password) {
+                // Shake for empty fields
+                card.style.animation = 'none';
+                card.offsetHeight;
+                card.style.animation = 'shake 0.4s ease';
+                return;
+            }
+
+            if (email === TEST_EMAIL && password === TEST_PASSWORD) {
+                // Success — redirect to main app
+                window.location.href = 'home.html';
+            } else {
+                // Wrong credentials — shake + show error
+                card.style.animation = 'none';
+                card.offsetHeight;
+                card.style.animation = 'shake 0.4s ease';
+
+                let errMsg = document.getElementById('login-error');
+                if (!errMsg) {
+                    errMsg = document.createElement('p');
+                    errMsg.id = 'login-error';
+                    errMsg.style.cssText = 'color:#ff6b6b;font-size:0.85rem;text-align:center;margin-top:10px;font-weight:500;';
+                    document.getElementById('login-btn').insertAdjacentElement('afterend', errMsg);
+                }
+                errMsg.textContent = 'Invalid email or password.';
+            }
+        });
+
+        // Enter key to submit
+        document.getElementById('password-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('login-btn').click();
+            }
+        });
+
+        document.getElementById('email-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('password-input').focus();
+            }
+        });
+
+        // Add shake keyframes dynamically
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                15% { transform: translateX(-8px); }
+                30% { transform: translateX(8px); }
+                45% { transform: translateX(-6px); }
+                60% { transform: translateX(6px); }
+                75% { transform: translateX(-3px); }
+                90% { transform: translateX(3px); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Password show/hide toggle
+        document.getElementById('password-toggle').addEventListener('click', () => {
+            const pwInput = document.getElementById('password-input');
+            const eyeOpen = document.getElementById('eye-open');
+            const eyeClosed = document.getElementById('eye-closed');
+
+            if (pwInput.type === 'password') {
+                pwInput.type = 'text';
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'block';
+            } else {
+                pwInput.type = 'password';
+                eyeOpen.style.display = 'block';
+                eyeClosed.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

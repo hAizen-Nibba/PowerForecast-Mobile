@@ -21,6 +21,9 @@
     }
   ],
   "routes": [
+    { "src": "/", "dest": "/login.html" },
+    { "src": "/index", "dest": "/login.html" },
+    { "src": "/index.html", "dest": "/login.html" },
     { "src": "/docs", "dest": "/docs.html" },
     { "src": "/api/rates", "dest": "/api/rates.py" },
     { "src": "/api/appliances", "dest": "/api/appliances.py" },

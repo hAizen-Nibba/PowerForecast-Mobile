@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PowerForecast - Smart Meralco bill calculator with real-time rate estimation and appliance energy tracking.">
+    <title>PowerForecast — Home</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('powerforecast_theme');
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        pf: {
+                            50: '#eef0ff',
+                            100: '#dfe3ff',
+                            200: '#c5caff',
+                            300: '#a2a5ff',
+                            400: '#8183fc',
+                            500: '#6c7ae0',
+                            600: '#5a5cc7',
+                            700: '#4a49a2',
+                            800: '#1a1072',
+                            900: '#0d0d5e',
+                            950: '#090940',
+                        },
+                        accent: {
+                            400: '#ffd54f',
+                            500: '#ffc107',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --transition-speed: 0.5s;
+            --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== Theme Variables ===== */
+        [data-theme="dark"] {
+            --page-bg: #0f0a3e;
+            --card-bg: rgba(15, 12, 60, 0.7);
+            --card-border: rgba(108, 122, 224, 0.12);
+            --card-glow-bg: rgba(20, 18, 80, 0.85);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --input-bg: rgba(15, 15, 60, 0.8);
+            --input-bg-solid: #0d0a33;
+            --input-border: rgba(108, 122, 224, 0.2);
+            --input-focus: #6c7ae0;
+            --accent: #6c7ae0;
+            --accent-text: #a2a5ff;
+            --accent-glow: rgba(108, 122, 224, 0.15);
+            --highlight: #ffd54f;
+            --divider: rgba(108, 122, 224, 0.08);
+            --toggle-label-color: #ffffff;
+            --logo-text-color: #ffffff;
+            --overlay-bg: rgba(9, 9, 40, 0.85);
+        }
+
+        [data-theme="light"] {
+            --page-bg: #f5f5ff;
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --card-border: rgba(108, 122, 224, 0.2);
+            --card-glow-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #100b46;
+            --text-secondary: #3d3e75;
+            --text-muted: #696b9e;
+            --input-bg: #ffffff;
+            --input-bg-solid: #ffffff;
+            --input-border: rgba(108, 122, 224, 0.28);
+            --input-focus: #5a5cc7;
+            --accent: #5a5cc7;
+            --accent-text: #3b3a8c;
+            --accent-glow: rgba(108, 122, 224, 0.12);
+            --highlight: #d97706;
+            --divider: rgba(108, 122, 224, 0.15);
+            --toggle-label-color: #1a1072;
+            --logo-text-color: #1a1072;
+            --overlay-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        select option {
+            background-color: var(--input-bg-solid);
+            color: var(--text-primary);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background var(--transition-speed) var(--transition-ease),
+                        color var(--transition-speed) var(--transition-ease);
+        }
+
+        /* Background layers */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            transition: opacity var(--transition-speed) var(--transition-ease);
+        }
+        .bg-dark-layer {
+            background: linear-gradient(160deg, #0f0a3e 0%, #1a1072 30%, #2b2bae 70%, #1a1072 100%);
+            opacity: 1;
+        }
+        .bg-light-layer {
+            background: linear-gradient(160deg, #f5f5ff 0%, #e8e6f8 30%, #d8d4f0 70%, #f0f0ff 100%);
+            opacity: 0;
+        }
+        [data-theme="light"] .bg-dark-layer { opacity: 0; }
+        [data-theme="light"] .bg-light-layer { opacity: 1; }
+
+        /* Glass cards */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            transition: background var(--transition-speed) var(--transition-ease),
+                        border-color var(--transition-speed) var(--transition-ease);
+        }
+
+        .glow-card {
+            background: var(--card-glow-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 0 30px -8px rgba(108, 122, 224, 0.25);
+            transition: background var(--transition-speed) var(--transition-ease),
+                        border-color var(--transition-speed) var(--transition-ease),
+                        box-shadow var(--transition-speed) var(--transition-ease);
+        }
+
+        [data-theme="light"] .glow-card {
+            box-shadow: 0 4px 24px -4px rgba(108, 122, 224, 0.15);
+        }
+
+        /* Text colors */
+        .t-primary { color: var(--text-primary); transition: color var(--transition-speed) var(--transition-ease); }
+        .t-secondary { color: var(--text-secondary); transition: color var(--transition-speed) var(--transition-ease); }
+        .t-muted { color: var(--text-muted); transition: color var(--transition-speed) var(--transition-ease); }
+        .t-accent { color: var(--accent-text); transition: color var(--transition-speed) var(--transition-ease); }
+
+        /* Inputs */
+        .pf-input {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        .pf-input:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 2px rgba(108, 122, 224, 0.3);
+            outline: none;
+        }
+        .pf-input::placeholder { color: var(--text-muted); }
+
+        /* Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--input-border);
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(108, 122, 224, 0.4);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--accent);
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+        .btn-secondary {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover { border-color: var(--accent); color: var(--accent-text); }
+
+        /* Toggle switch */
+        .toggle-switch { position: relative; width: 58px; height: 32px; cursor: pointer; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; inset: 0;
+            background: rgba(108, 122, 224, 0.3);
+            border-radius: 16px;
+            transition: background 0.3s ease;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute; top: 3px; left: 3px;
+            width: 26px; height: 26px;
+            background: #ffffff;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(26px); }
+
+        /* Colored bar segments */
+        .bar-gen { background: #6c7ae0; }
+        .bar-trans { background: #a78bfa; }
+        .bar-sysloss { background: #818cf8; }
+        .bar-dist { background: #34d399; }
+        .bar-taxes { background: #fbbf24; }
+        .bar-others { background: #94a3b8; }
+
+        /* Dot indicators */
+        .dot-gen { background: #6c7ae0; }
+        .dot-trans { background: #a78bfa; }
+        .dot-sysloss { background: #818cf8; }
+        .dot-dist { background: #34d399; }
+        .dot-taxes { background: #fbbf24; }
+        .dot-others { background: #94a3b8; }
+
+        /* Tips card */
+        .tip-card {
+            background: var(--accent-glow);
+            border: 1px solid rgba(108, 122, 224, 0.15);
+            transition: background var(--transition-speed) var(--transition-ease),
+                        border-color var(--transition-speed) var(--transition-ease);
+        }
+
+        /* Settings overlay */
+        .settings-overlay {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+        }
+        .settings-panel {
+            background: var(--overlay-bg);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--card-border);
+            transition: background var(--transition-speed) var(--transition-ease);
+        }
+
+        /* Divider */
+        .pf-divider { border-color: var(--divider); }
+
+        /* Section label badge */
+        .badge {
+            background: rgba(108, 122, 224, 0.15);
+            border: 1px solid rgba(108, 122, 224, 0.25);
+            color: var(--accent-text);
+        }
+
+        /* Multi-resolution & Display-Ratio Resilience */
+        @media (min-width: 1920px) {
+            .max-w-6xl {
+                max-width: 84rem; /* Expand gracefully on 2K, 4K, and 21:9 ultrawide monitors */
+            }
+        }
+        @media (max-height: 750px) {
+            header {
+                padding-top: 0.75rem;
+                padding-bottom: 0.5rem;
+            }
+            main {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--input-border); border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen min-h-dvh flex flex-col">
+    <!-- Background layers -->
+    <div class="bg-layer bg-dark-layer"></div>
+    <div class="bg-layer bg-light-layer"></div>
+
+    <div class="relative z-10 flex flex-col min-h-screen min-h-dvh">
+
+    <!-- Header -->
+    <header class="max-w-6xl mx-auto w-full px-4 pt-6 pb-4 flex justify-between items-center">
+        <a href="index.html" class="flex items-center gap-3.5 hover:opacity-90 transition-opacity">
+            <img src="Assets/LOGO.png" alt="PowerForecast Logo" class="w-11 h-auto drop-shadow-md">
+            <div>
+                <h1 class="text-xl font-bold tracking-tight t-primary">powerforecast</h1>
+                <p class="text-xs t-muted">Meralco Calculator</p>
+            </div>
+        </a>
+        <div class="flex items-center gap-3">
+            <a href="docs.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                </svg>
+                API Docs
+            </a>
+            <button onclick="toggleSettingsModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.43l1.004-.827c.292-.24.437-.613.43-.991a6.936 6.936 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.645-.869L9.594 3.94Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+                Tweak Rates
+            </button>
+
+            <!-- Theme Toggle -->
+            <div class="flex items-center gap-2.5 ml-2">
+                <span class="text-sm font-semibold" id="theme-label" style="color: var(--toggle-label-color); transition: color 0.5s ease;">Dark</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="theme-checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto w-full px-4 py-4 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Left Side: Interactive Inputs -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+            <div class="glass-card p-6 rounded-2xl shadow-xl flex flex-col gap-6">
+                <div>
+                    <h2 class="text-lg font-semibold t-primary">Bill Parameters</h2>
+                    <p class="text-sm t-muted">Configure your consumption metrics below to update details.</p>
+                </div>
+
+                <!-- Input: Generation Charge Rate -->
+                <div class="flex flex-col gap-2">
+                    <label for="genRateInput" class="text-sm font-medium t-secondary flex justify-between">
+                        <span>Base Generation Charge</span>
+                        <span class="t-accent font-semibold">PHP / kWh</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center t-muted font-medium pointer-events-none">₱</span>
+                        <input
+                            type="number"
+                            id="genRateInput"
+                            value="9.2504"
+                            step="0.0001"
+                            min="0"
+                            class="w-full pf-input rounded-xl pl-8 pr-4 py-3.5 text-lg font-semibold"
+                            oninput="isGenerationRateManual = true; calculateBill()"
+                        >
+                    </div>
+                    <p id="genRateHelperText" class="text-xs t-muted">Fetched Meralco Generation Rate: ₱9.2504 / kWh</p>
+                </div>
+
+                <!-- Input: Other Charges / Deposits -->
+                <div class="flex flex-col gap-2">
+                    <label for="otherChargesInput" class="text-sm font-medium t-secondary flex justify-between">
+                        <span>Other Charges / Bill Deposit</span>
+                        <span class="t-accent font-semibold">PHP</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center t-muted font-medium pointer-events-none">₱</span>
+                        <input
+                            type="number"
+                            id="otherChargesInput"
+                            value="0.00"
+                            step="0.01"
+                            min="0"
+                            class="w-full pf-input rounded-xl pl-8 pr-4 py-3.5 text-lg font-semibold"
+                            oninput="calculateBill()"
+                        >
+                    </div>
+                    <p class="text-xs t-muted">Enter extra charges (e.g. ₱87.02 for bill deposits, or ₱0.00).</p>
+                </div>
+
+                <!-- Input: Consumption in kWh -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex justify-between items-center">
+                        <label for="kwhInput" class="text-sm font-medium t-secondary">Monthly Consumption</label>
+                        <div class="flex items-center pf-input rounded-lg px-2 py-1">
+                            <input
+                                type="number"
+                                id="kwhInput"
+                                value="0"
+                                class="w-16 bg-transparent text-right font-bold t-accent outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                oninput="syncKwhSlider(this.value)"
+                            >
+                            <span class="text-xs t-muted ml-1 font-medium">kWh</span>
+                        </div>
+                    </div>
+
+                    <input
+                        type="range"
+                        id="kwhSlider"
+                        min="0"
+                        max="1500"
+                        value="0"
+                        class="w-full cursor-pointer"
+                        oninput="syncKwhInput(this.value)"
+                    >
+                    <div class="flex justify-between text-[11px] t-muted font-medium">
+                        <span>0 kWh</span>
+                        <span>500 kWh</span>
+                        <span>1,000 kWh</span>
+                        <span>1,500 kWh</span>
+                    </div>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="flex flex-col gap-2">
+                    <span class="text-xs font-semibold t-muted uppercase tracking-wider">Quick Presets (kWh)</span>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="applyPreset(100)" class="py-2 btn-secondary rounded-lg text-xs font-medium">100</button>
+                        <button onclick="applyPreset(200)" class="py-2 btn-secondary rounded-lg text-xs font-medium">200</button>
+                        <button onclick="applyPreset(300)" class="py-2 btn-secondary rounded-lg text-xs font-medium">300</button>
+                        <button onclick="applyPreset(500)" class="py-2 btn-secondary rounded-lg text-xs font-medium">500</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appliance Library & Energy Estimator Card -->
+            <div class="glass-card p-6 rounded-2xl shadow-xl flex flex-col gap-5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-base font-semibold t-primary flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-5 h-5 t-accent">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+                            </svg>
+                            Appliance Energy Estimator
+                        </h3>
+                        <p class="text-xs t-muted mt-0.5">Select an appliance catalog item to estimate monthly kWh consumption.</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-0.5 badge rounded-full uppercase">Meralco Catalog</span>
+                </div>
+
+                <!-- Category Filter Selector -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="applianceCategorySelect" class="text-xs font-medium t-secondary">Category Filter</label>
+                    <select id="applianceCategorySelect" onchange="filterApplianceCategory()" class="w-full pf-input rounded-xl px-3 py-2 text-sm">
+                        <option value="ALL">All Categories</option>
+                    </select>
+                </div>
+
+                <!-- Appliance Selector -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="applianceSelect" class="text-xs font-medium t-secondary">Select Appliance</label>
+                    <select id="applianceSelect" onchange="onApplianceSelected()" class="w-full pf-input rounded-xl px-3 py-2 text-sm font-medium">
+                        <option value="">-- Choose an appliance --</option>
+                    </select>
+                </div>
+
+                <!-- Appliance Specs Inputs -->
+                <div id="applianceSpecsPanel" class="flex flex-col gap-4 p-4 rounded-xl" style="background: var(--input-bg); border: 1px solid var(--input-border);">
+                    <!-- Power Rating (Wattage) -->
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="t-muted font-medium">Standard Wattage</span>
+                        <div class="flex items-center gap-1">
+                            <input type="number" id="applianceWattsInput" value="0" min="1" step="1" oninput="updateApplianceKwhCalculation()" class="w-20 pf-input rounded px-2 py-1 text-right font-bold text-xs">
+                            <span class="t-muted">Watts</span>
+                        </div>
+                    </div>
+
+                    <!-- Daily Operating Hours -->
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="t-muted font-medium">Hours per Day</span>
+                            <span class="t-accent font-bold"><span id="lblApplianceHours">8</span> hrs/day</span>
+                        </div>
+                        <input type="range" id="applianceHoursSlider" min="0.1" max="24" step="0.5" value="8" oninput="document.getElementById('lblApplianceHours').textContent = this.value; updateApplianceKwhCalculation()" class="w-full cursor-pointer">
+                    </div>
+
+                    <!-- Monthly Operating Days -->
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex justify-between text-xs">
+                            <span class="t-muted font-medium">Days per Month</span>
+                            <span class="t-accent font-bold"><span id="lblApplianceDays">30</span> days/mo</span>
+                        </div>
+                        <input type="range" id="applianceDaysSlider" min="1" max="30" step="1" value="30" oninput="document.getElementById('lblApplianceDays').textContent = this.value; updateApplianceKwhCalculation()" class="w-full cursor-pointer">
+                    </div>
+
+                    <!-- Estimated kWh Output Badge -->
+                    <div class="flex items-center justify-between pt-2 pf-divider border-t">
+                        <span class="text-xs t-muted font-semibold uppercase tracking-wider">Estimated Monthly Energy</span>
+                        <div class="text-right">
+                            <span class="text-lg font-extrabold t-primary" id="applianceEstKwh">0.00</span>
+                            <span class="text-xs t-accent font-bold ml-1">kWh / mo</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="applyApplianceAsKwh()" class="flex-1 py-2 btn-primary rounded-lg text-xs font-semibold shadow-md">
+                            Set as Bill kWh
+                        </button>
+                        <button onclick="addApplianceToLoadList()" class="flex-1 py-2 btn-secondary rounded-lg text-xs font-semibold">
+                            + Add to Load List
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Added Household Load List -->
+                <div id="householdLoadPanel" class="flex flex-col gap-2.5">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-semibold t-secondary uppercase tracking-wider">Household Load List</span>
+                        <span class="text-xs font-bold t-accent" id="totalLoadKwh">0.00 kWh</span>
+                    </div>
+                    <div id="householdLoadItems" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                        <p class="text-xs t-muted italic">No appliances added to household list yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Helpful Tips -->
+            <div class="tip-card p-4 rounded-2xl flex gap-3.5 items-start">
+                <div class="t-accent mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="text-xs font-semibold t-primary">VAT & Taxes Included</h4>
+                    <p class="text-xs t-muted leading-relaxed mt-0.5">Meralco bills apply a dynamic effective VAT rate (approx. 10.1% overall) as well as Non-VAT charges (like FIT-All and Universal charges) which this app calculates automatically.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Side: Real-time Output & Breakdown -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+            <!-- Glowing Total Display Card -->
+            <div class="glow-card rounded-2xl p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[200px]">
+                <div class="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl pointer-events-none" style="background: var(--accent-glow);"></div>
+                <span class="text-xs font-bold t-muted uppercase tracking-widest">Total Amount Due</span>
+                <span class="text-5xl lg:text-6xl font-extrabold tracking-tight t-primary mt-2 mb-2 flex items-baseline">
+                    <span class="text-3xl font-semibold t-accent mr-1.5">₱</span>
+                    <span id="displayTotalBill">0.00</span>
+                </span>
+                <div class="flex gap-4 text-xs t-muted font-medium mt-1">
+                    <span>Energy Cost: ₱<span id="displayEnergyCost">0.00</span></span>
+                    <span>•</span>
+                    <span>Other Fees: ₱<span id="displayOtherFees">0.00</span></span>
+                </div>
+                <span class="text-xs t-muted font-medium mt-2">Calculated for <span id="displayKwh">0</span> kWh</span>
+            </div>
+
+            <!-- Dynamic Cost Breakdown -->
+            <div class="glass-card p-6 rounded-2xl flex flex-col gap-6">
+                <div>
+                    <h3 class="text-base font-semibold t-primary">Charge Components Breakdown</h3>
+                    <p class="text-xs t-muted">See how your bill components sum up dynamically based on your rates.</p>
+                </div>
+
+                <!-- Visual Stacked Bar -->
+                <div class="flex flex-col gap-2">
+                    <div class="flex justify-between text-xs font-medium t-muted">
+                        <span>Cost Share Distribution</span>
+                        <span>Total: 100%</span>
+                    </div>
+                    <div class="h-3.5 w-full rounded-full flex overflow-hidden" style="background: var(--input-bg); border: 1px solid var(--input-border);">
+                        <div id="barGen" class="bar-gen transition-all duration-300" style="width: 50%" title="Generation"></div>
+                        <div id="barTrans" class="bar-trans transition-all duration-300" style="width: 10%" title="Transmission"></div>
+                        <div id="barSysLoss" class="bar-sysloss transition-all duration-300" style="width: 5%" title="System Loss"></div>
+                        <div id="barDist" class="bar-dist transition-all duration-300" style="width: 15%" title="Distribution"></div>
+                        <div id="barTaxes" class="bar-taxes transition-all duration-300" style="width: 10%" title="Taxes & VAT"></div>
+                        <div id="barOthers" class="bar-others transition-all duration-300" style="width: 10%" title="Others"></div>
+                    </div>
+                    <!-- Bar Legends -->
+                    <div class="flex flex-wrap gap-x-4 gap-y-1.5 mt-1 text-[11px] t-muted">
+                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded dot-gen inline-block"></span> Generation (<span id="pctGen">0%</span>)</div>
+                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded dot-trans inline-block"></span> Transmission (<span id="pctTrans">0%</span>)</div>
+                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded dot-sysloss inline-block"></span> System Loss (<span id="pctSysLoss">0%</span>)</div>
+                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded dot-dist inline-block"></span> Distribution (<span id="pctDist">0%</span>)</div>
+                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded dot-taxes inline-block"></span> Taxes & VAT (<span id="pctTaxes">0%</span>)</div>
+                        <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded dot-others inline-block"></span> Others (<span id="pctOthers">0%</span>)</div>
+                    </div>
+                </div>
+
+                <div class="pf-divider border-t my-2"></div>
+
+                <!-- Breakdown Tables -->
+                <div class="flex flex-col gap-3.5">
+                    <!-- Generation -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">Generation Charge</span>
+                            <span class="text-xs t-muted">Base: <span id="lblGenBase">0</span> kWh * <span id="lblGenRate">0.00</span> PHP/kWh</span>
+                        </div>
+                        <span class="font-semibold t-primary">₱<span id="valGen">0.00</span></span>
+                    </div>
+
+                    <!-- Transmission -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">Transmission Charge</span>
+                            <span class="text-xs t-muted">Base: <span id="lblTransBase">0</span> kWh * <span id="lblTransRate">0.00</span> PHP/kWh</span>
+                        </div>
+                        <span class="font-semibold t-primary">₱<span id="valTrans">0.00</span></span>
+                    </div>
+
+                    <!-- System Loss -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">System Loss Charge</span>
+                            <span class="text-xs t-muted">Base: <span id="lblSysLossBase">0</span> kWh * <span id="lblSysLossRate">0.00</span> PHP/kWh</span>
+                        </div>
+                        <span class="font-semibold t-primary">₱<span id="valSysLoss">0.00</span></span>
+                    </div>
+
+                    <!-- Distribution -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">Distribution Charge</span>
+                            <span class="text-xs t-muted">Base: <span id="lblDistBase">0</span> kWh * <span id="lblDistRate">0.00</span> PHP/kWh</span>
+                        </div>
+                        <span class="font-semibold t-primary">₱<span id="valDist">0.00</span></span>
+                    </div>
+
+                    <!-- Metering & Supply -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">Metering & Supply Charge</span>
+                            <span class="text-xs t-muted">Includes Fixed Fees (₱<span id="lblFixedMeter">0.00</span> + ₱<span id="lblFixedSupply">0.00</span>) + per-kWh rates</span>
+                        </div>
+                        <span class="font-semibold t-primary">₱<span id="valMeterSupply">0.00</span></span>
+                    </div>
+
+                    <!-- AWAT Refund -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">AWAT (Refund)/Collect</span>
+                            <span class="text-xs t-muted">Base: <span id="lblAwatBase">0</span> kWh * <span id="lblAwatRate">0.00</span> PHP/kWh</span>
+                        </div>
+                        <span class="font-semibold" style="color: #34d399;">₱<span id="valAwat">0.00</span></span>
+                    </div>
+
+                    <!-- Reg Reset -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">Regulatory Reset Charge</span>
+                            <span class="text-xs t-muted">Base: <span id="lblRegResetBase">0</span> kWh * <span id="lblRegResetRate">0.0000</span> PHP/kWh</span>
+                        </div>
+                        <span class="font-semibold" style="color: #34d399;">₱<span id="valRegReset">0.00</span></span>
+                    </div>
+
+                    <!-- Senior Citizen -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">Senior Citizen Charge</span>
+                            <span class="text-xs t-muted">Base: <span id="lblSeniorBase">0</span> kWh * <span id="lblSeniorRate">0.0000</span> PHP/kWh</span>
+                        </div>
+                        <span class="font-semibold t-primary">₱<span id="valSenior">0.00</span></span>
+                    </div>
+
+                    <!-- Taxes & VAT -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">Government Taxes & VAT</span>
+                            <span class="text-xs t-muted">Includes VAT (₱<span id="valVatDetails">0.00</span>), LFT (<span id="lblLftRate">0.5</span>%), and RPT (₱<span id="lblRptRate">0.0062</span>/kWh)</span>
+                        </div>
+                        <span class="font-semibold t-primary">₱<span id="valVat">0.00</span></span>
+                    </div>
+
+                    <!-- Universal/FIT-All Charges -->
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex flex-col">
+                            <span class="font-medium t-primary">Other Subsidies & Non-VAT Charges</span>
+                            <span class="text-xs t-muted">Universal charges + FIT-All (₱<span id="lblNonVatRate">0.0000</span>/kWh)</span>
+                        </div>
+                        <span class="font-semibold t-primary">₱<span id="valNonVat">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Side Slide-over settings panel -->
+    <div id="settingsModal" class="fixed inset-0 z-50 overflow-hidden hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="settings-overlay absolute inset-0 transition-opacity" onclick="toggleSettingsModal()"></div>
+            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                <div class="pointer-events-auto w-screen max-w-md">
+                    <div class="settings-panel flex h-full flex-col overflow-y-scroll shadow-2xl">
+                        <div class="px-6 py-6 pf-divider border-b flex justify-between items-center" style="background: var(--accent-glow);">
+                            <div>
+                                <h2 class="text-lg font-bold t-primary" id="slide-over-title">Configure Rates & Constants</h2>
+                                <p class="text-xs t-muted">Fine-tune the Meralco billing multipliers in real-time.</p>
+                            </div>
+                            <button type="button" onclick="toggleSettingsModal()" class="rounded-lg p-1.5 btn-secondary">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Configuration Form -->
+                        <div class="flex-1 px-6 py-6 flex flex-col gap-5">
+                            <!-- Group: Base Component Rates -->
+                            <div class="flex flex-col gap-3">
+                                <span class="text-xs font-bold t-muted uppercase tracking-widest pf-divider border-b pb-1">Base Rates (PHP/kWh)</span>
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="cfgTrans" class="text-xs t-muted">Transmission Rate</label>
+                                    <input type="number" id="cfgTrans" step="0.0001" class="pf-input rounded-lg px-3 py-1.5 text-sm" oninput="saveConstants()">
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="cfgSysLoss" class="text-xs t-muted">System Loss Rate</label>
+                                    <input type="number" id="cfgSysLoss" step="0.0001" class="pf-input rounded-lg px-3 py-1.5 text-sm" oninput="saveConstants()">
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="cfgAwat" class="text-xs t-muted">AWAT Refund/Collect</label>
+                                    <input type="number" id="cfgAwat" step="0.0001" class="pf-input rounded-lg px-3 py-1.5 text-sm" oninput="saveConstants()">
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="cfgRegReset" class="text-xs t-muted">Reg Reset Charge</label>
+                                    <input type="number" id="cfgRegReset" step="0.0001" class="pf-input rounded-lg px-3 py-1.5 text-sm" oninput="saveConstants()">
+                                </div>
+                            </div>
+
+                            <!-- Group: Progressive Distribution Rates -->
+                            <div class="flex flex-col gap-3">
+                                <span class="text-xs font-bold t-muted uppercase tracking-widest pf-divider border-b pb-1">Distribution Tiers (PHP/kWh)</span>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">0 - 200 kWh</span>
+                                        <input type="number" id="cfgDistL1" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">201 - 300 kWh</span>
+                                        <input type="number" id="cfgDistL2" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">301 - 400 kWh</span>
+                                        <input type="number" id="cfgDistL3" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">401+ kWh</span>
+                                        <input type="number" id="cfgDistL4" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group: Metering & Supply Fees -->
+                            <div class="flex flex-col gap-3">
+                                <span class="text-xs font-bold t-muted uppercase tracking-widest pf-divider border-b pb-1">Metering & Supply</span>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Metering Fixed (PHP/mo)</span>
+                                        <input type="number" id="cfgMeterFixed" step="0.01" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Metering rate/kWh</span>
+                                        <input type="number" id="cfgMeterKwh" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Supply Fixed (PHP/mo)</span>
+                                        <input type="number" id="cfgSupplyFixed" step="0.01" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Supply rate/kWh</span>
+                                        <input type="number" id="cfgSupplyKwh" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group: VAT Rates -->
+                            <div class="flex flex-col gap-3">
+                                <span class="text-xs font-bold t-muted uppercase tracking-widest pf-divider border-b pb-1">Component VAT Rates</span>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Gen VAT (e.g. 0.0941)</span>
+                                        <input type="number" id="cfgVatGen" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Trans VAT (e.g. 0.1126)</span>
+                                        <input type="number" id="cfgVatTrans" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Sys Loss VAT (0.0966)</span>
+                                        <input type="number" id="cfgVatSysLoss" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Other VAT (0.1200)</span>
+                                        <input type="number" id="cfgVatOthers" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group: Other Taxes -->
+                            <div class="flex flex-col gap-3">
+                                <span class="text-xs font-bold t-muted uppercase tracking-widest pf-divider border-b pb-1">Government Taxes</span>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">RPT Charge (PHP/kWh)</span>
+                                        <input type="number" id="cfgRpt" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Franchise LFT Rate</span>
+                                        <input type="number" id="cfgLft" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group: Non-VAT Subsidies -->
+                            <div class="flex flex-col gap-3">
+                                <span class="text-xs font-bold t-muted uppercase tracking-widest pf-divider border-b pb-1">Subsidies & Non-VAT</span>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Universal rate/kWh</span>
+                                        <input type="number" id="cfgUniversal" step="0.00001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">FIT-All rate/kWh</span>
+                                        <input type="number" id="cfgFitAll" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Lifeline rate/kWh</span>
+                                        <input type="number" id="cfgLifeline" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="t-muted">Senior rate/kWh</span>
+                                        <input type="number" id="cfgSenior" step="0.0001" class="pf-input rounded-lg px-2 py-1.5" oninput="saveConstants()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reset Buttons -->
+                        <div class="p-6 pf-divider border-t flex gap-4" style="background: var(--accent-glow);">
+                            <button onclick="resetConstants()" class="flex-1 py-2.5 btn-secondary rounded-xl text-sm font-semibold">Reset Defaults</button>
+                            <button onclick="toggleSettingsModal()" class="flex-1 py-2.5 btn-primary rounded-xl text-sm font-semibold shadow-lg">Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="pf-footer max-w-6xl mx-auto w-full px-4 py-8 border-t text-center flex flex-col sm:flex-row justify-between gap-4 text-xs">
+        <span>&copy; 2026 PowerForecast. Estimates based on parsed rates.</span>
+        <span>Not affiliated with Meralco. Designed for local thesis purposes.</span>
+    </footer>
+
+    </div><!-- end relative z-10 -->
+
+    <!-- Logic Script -->
+    <script>
+        // ===== Theme Toggle =====
+        const themeCheckbox = document.getElementById('theme-checkbox');
+        const themeLabel = document.getElementById('theme-label');
+        const htmlEl = document.documentElement;
+
+        function setTheme(isDark) {
+            if (isDark) {
+                htmlEl.setAttribute('data-theme', 'dark');
+                themeLabel.textContent = 'Dark';
+                themeCheckbox.checked = true;
+                localStorage.setItem('powerforecast_theme', 'dark');
+            } else {
+                htmlEl.setAttribute('data-theme', 'light');
+                themeLabel.textContent = 'Light';
+                themeCheckbox.checked = false;
+                localStorage.setItem('powerforecast_theme', 'light');
+            }
+        }
+
+        themeCheckbox.addEventListener('change', () => {
+            setTheme(themeCheckbox.checked);
+        });
+
+        // Initialize from localStorage or default to dark
+        const savedTheme = localStorage.getItem('powerforecast_theme');
+        setTheme(savedTheme ? savedTheme === 'dark' : true);
+
+        // ===== Rate Constants =====
+        const DEFAULT_RATES = {
+            transmission: 1.4074,
+            systemLoss: 0.7994,
+            distTier1: 0.9803,
+            distTier2: 1.2908,
+            distTier3: 1.5837,
+            distTier4: 2.0941,
+            meteringFixed: 5.0000,
+            meteringPerKwh: 0.3350,
+            supplyFixed: 16.3800,
+            supplyPerKwh: 0.4979,
+            awatRefund: -0.4278,
+            regReset: -0.0023,
+            vatGen: 0.0941,
+            vatTrans: 0.1126,
+            vatSysLoss: 0.0966,
+            vatOthers: 0.1200,
+            rptRate: 0.0062,
+            lftRate: 0.0050,
+            universalRate: 0.3216,
+            fitAll: 0.2011,
+            lifelineRate: 0.0100,
+            seniorRate: 0.0001
+        };
+
+        let activeRates = { ...DEFAULT_RATES };
+
+        function initRates() {
+            const saved = localStorage.getItem('powerforecast_rates');
+            if (saved) {
+                try {
+                    activeRates = { ...DEFAULT_RATES, ...JSON.parse(saved) };
+                } catch(e) {
+                    activeRates = { ...DEFAULT_RATES };
+                }
+            }
+            populateSettingsInputs();
+        }
+
+        function populateSettingsInputs() {
+            document.getElementById('cfgTrans').value = activeRates.transmission;
+            document.getElementById('cfgSysLoss').value = activeRates.systemLoss;
+            document.getElementById('cfgDistL1').value = activeRates.distTier1;
+            document.getElementById('cfgDistL2').value = activeRates.distTier2;
+            document.getElementById('cfgDistL3').value = activeRates.distTier3;
+            document.getElementById('cfgDistL4').value = activeRates.distTier4;
+            document.getElementById('cfgMeterFixed').value = activeRates.meteringFixed;
+            document.getElementById('cfgMeterKwh').value = activeRates.meteringPerKwh;
+            document.getElementById('cfgSupplyFixed').value = activeRates.supplyFixed;
+            document.getElementById('cfgSupplyKwh').value = activeRates.supplyPerKwh;
+            document.getElementById('cfgAwat').value = activeRates.awatRefund;
+            document.getElementById('cfgRegReset').value = activeRates.regReset || 0;
+            document.getElementById('cfgVatGen').value = activeRates.vatGen;
+            document.getElementById('cfgVatTrans').value = activeRates.vatTrans;
+            document.getElementById('cfgVatSysLoss').value = activeRates.vatSysLoss;
+            document.getElementById('cfgVatOthers').value = activeRates.vatOthers;
+            document.getElementById('cfgRpt').value = activeRates.rptRate;
+            document.getElementById('cfgLft').value = activeRates.lftRate;
+            document.getElementById('cfgUniversal').value = activeRates.universalRate;
+            document.getElementById('cfgFitAll').value = activeRates.fitAll;
+            document.getElementById('cfgLifeline').value = activeRates.lifelineRate;
+            document.getElementById('cfgSenior').value = activeRates.seniorRate;
+        }
+
+        function saveConstants() {
+            activeRates.transmission = parseFloat(document.getElementById('cfgTrans').value) || 0;
+            activeRates.systemLoss = parseFloat(document.getElementById('cfgSysLoss').value) || 0;
+            activeRates.distTier1 = parseFloat(document.getElementById('cfgDistL1').value) || 0;
+            activeRates.distTier2 = parseFloat(document.getElementById('cfgDistL2').value) || 0;
+            activeRates.distTier3 = parseFloat(document.getElementById('cfgDistL3').value) || 0;
+            activeRates.distTier4 = parseFloat(document.getElementById('cfgDistL4').value) || 0;
+            activeRates.meteringFixed = parseFloat(document.getElementById('cfgMeterFixed').value) || 0;
+            activeRates.meteringPerKwh = parseFloat(document.getElementById('cfgMeterKwh').value) || 0;
+            activeRates.supplyFixed = parseFloat(document.getElementById('cfgSupplyFixed').value) || 0;
+            activeRates.supplyPerKwh = parseFloat(document.getElementById('cfgSupplyKwh').value) || 0;
+            activeRates.awatRefund = parseFloat(document.getElementById('cfgAwat').value) || 0;
+            activeRates.regReset = parseFloat(document.getElementById('cfgRegReset').value) || 0;
+            activeRates.vatGen = parseFloat(document.getElementById('cfgVatGen').value) || 0;
+            activeRates.vatTrans = parseFloat(document.getElementById('cfgVatTrans').value) || 0;
+            activeRates.vatSysLoss = parseFloat(document.getElementById('cfgVatSysLoss').value) || 0;
+            activeRates.vatOthers = parseFloat(document.getElementById('cfgVatOthers').value) || 0;
+            activeRates.rptRate = parseFloat(document.getElementById('cfgRpt').value) || 0;
+            activeRates.lftRate = parseFloat(document.getElementById('cfgLft').value) || 0;
+            activeRates.universalRate = parseFloat(document.getElementById('cfgUniversal').value) || 0;
+            activeRates.fitAll = parseFloat(document.getElementById('cfgFitAll').value) || 0;
+            activeRates.lifelineRate = parseFloat(document.getElementById('cfgLifeline').value) || 0;
+            activeRates.seniorRate = parseFloat(document.getElementById('cfgSenior').value) || 0;
+            localStorage.setItem('powerforecast_rates', JSON.stringify(activeRates));
+            calculateBill();
+        }
+
+        function resetConstants() {
+            activeRates = { ...DEFAULT_RATES };
+            localStorage.removeItem('powerforecast_rates');
+            populateSettingsInputs();
+            calculateBill();
+        }
+
+        function toggleSettingsModal() {
+            const modal = document.getElementById('settingsModal');
+            modal.classList.toggle('hidden');
+        }
+
+        let meralcoRatesData = null;
+        let isGenerationRateManual = false;
+
+        async function fetchRates() {
+            try {
+                let response = await fetch('/api/rates');
+                if (!response.ok) {
+                    response = await fetch('rates.json');
+                }
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success && result.data) {
+                        meralcoRatesData = result.data;
+                        console.log("Successfully loaded rates:", result);
+                        updateGenRateFromRates();
+                        calculateBill();
+                    }
+                }
+            } catch (error) {
+                console.warn("Could not fetch rates, using defaults:", error);
+            }
+        }
+
+        function updateGenRateFromRates() {
+            if (isGenerationRateManual || !meralcoRatesData || meralcoRatesData.length === 0) return;
+
+            const kwh = parseFloat(document.getElementById('kwhInput').value) || 0;
+            const genInput = document.getElementById('genRateInput');
+            const helperText = document.getElementById('genRateHelperText');
+
+            let targetRate = meralcoRatesData[0].generation_rate;
+            let labelText = `Fetched Meralco Generation Rate: ₱${targetRate.toFixed(4)} / kWh`;
+
+            if (kwh > 0) {
+                let closestEntry = meralcoRatesData[0];
+                let minDiff = Math.abs(closestEntry.kwh - kwh);
+
+                for (let i = 1; i < meralcoRatesData.length; i++) {
+                    const diff = Math.abs(meralcoRatesData[i].kwh - kwh);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closestEntry = meralcoRatesData[i];
+                    }
+                }
+
+                if (closestEntry && closestEntry.generation_rate) {
+                    targetRate = closestEntry.generation_rate;
+                    labelText = `Closest bracket: ${closestEntry.kwh} kWh (Rate: ₱${targetRate.toFixed(4)} / kWh)`;
+                }
+            }
+
+            if (genInput) genInput.value = targetRate.toFixed(4);
+            if (helperText) helperText.textContent = labelText;
+        }
+
+        function syncKwhInput(value) {
+            document.getElementById('kwhInput').value = value;
+            updateGenRateFromRates();
+            calculateBill();
+        }
+
+        function syncKwhSlider(value) {
+            const num = parseInt(value) || 0;
+            if (num >= 0 && num <= 1500) {
+                document.getElementById('kwhSlider').value = num;
+            }
+            updateGenRateFromRates();
+            calculateBill();
+        }
+
+        function applyPreset(value) {
+            document.getElementById('kwhInput').value = value;
+            document.getElementById('kwhSlider').value = value;
+            updateGenRateFromRates();
+            calculateBill();
+        }
+
+        function calculateBill() {
+            const genRate = parseFloat(document.getElementById('genRateInput').value) || 0;
+            const kwh = parseFloat(document.getElementById('kwhInput').value) || 0;
+            const otherCharges = parseFloat(document.getElementById('otherChargesInput').value) || 0;
+
+            const genCost = Math.round(kwh * genRate * 100) / 100;
+            const transCost = Math.round(kwh * activeRates.transmission * 100) / 100;
+            const sysLossCost = Math.round(kwh * activeRates.systemLoss * 100) / 100;
+
+            let distRate = activeRates.distTier4;
+            if (kwh <= 200) distRate = activeRates.distTier1;
+            else if (kwh <= 300) distRate = activeRates.distTier2;
+            else if (kwh <= 400) distRate = activeRates.distTier3;
+            const distCost = Math.round(kwh * distRate * 100) / 100;
+
+            const meteringCost = kwh === 0 ? 0 : Math.round(kwh * activeRates.meteringPerKwh * 100) / 100 + activeRates.meteringFixed;
+            const supplyCost = kwh === 0 ? 0 : Math.round(kwh * activeRates.supplyPerKwh * 100) / 100 + activeRates.supplyFixed;
+
+            const awatRefund = Math.round(kwh * activeRates.awatRefund * 100) / 100;
+            const regReset = Math.round(kwh * (activeRates.regReset || 0) * 100) / 100;
+
+            const seniorCost = Math.round(kwh * activeRates.seniorRate * 100) / 100;
+
+            const genVat = Math.round(genCost * activeRates.vatGen * 100) / 100;
+            const transVat = Math.round(transCost * activeRates.vatTrans * 100) / 100;
+            const sysLossVat = Math.round(sysLossCost * activeRates.vatSysLoss * 100) / 100;
+
+            const distMeralcoTotal = distCost + meteringCost + supplyCost + awatRefund + regReset;
+            const distVat = Math.round(distMeralcoTotal * activeRates.vatOthers * 100) / 100;
+            const seniorVat = Math.round(seniorCost * activeRates.vatOthers * 100) / 100;
+
+            const totalVat = genVat + transVat + sysLossVat + distVat + seniorVat;
+
+            const rptCost = Math.round(kwh * activeRates.rptRate * 100) / 100;
+            const lftBase = genCost + transCost + sysLossCost + distMeralcoTotal + seniorCost + rptCost;
+            const lftCost = Math.round(lftBase * activeRates.lftRate * 100) / 100;
+
+            const govTaxesTotal = rptCost + lftCost + totalVat;
+
+            const ucNPCSPUG = Math.round(kwh * activeRates.universalRate * (0.2662 / 0.3216) * 100) / 100;
+            const ucREDCI = Math.round(kwh * activeRates.universalRate * (0.0101 / 0.3216) * 100) / 100;
+            const ucEnv = Math.round(kwh * activeRates.universalRate * (0.0025 / 0.3216) * 100) / 100;
+            const ucStranded = Math.round(kwh * activeRates.universalRate * (0.0428 / 0.3216) * 100) / 100;
+            const universalChargesTotal = ucNPCSPUG + ucREDCI + ucEnv + ucStranded;
+
+            const fitAllCost = Math.round(kwh * activeRates.fitAll * 100) / 100;
+            const lifelineCost = Math.round(kwh * activeRates.lifelineRate * 100) / 100;
+
+            const nonVatSubsidiesTotal = universalChargesTotal + fitAllCost + lifelineCost;
+
+            const energyAmount = genCost + transCost + sysLossCost + distMeralcoTotal + seniorCost + govTaxesTotal + nonVatSubsidiesTotal;
+            const totalBill = energyAmount + otherCharges;
+
+            document.getElementById('displayTotalBill').textContent = totalBill.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('displayEnergyCost').textContent = energyAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('displayOtherFees').textContent = otherCharges.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('displayKwh').textContent = kwh.toLocaleString('en-US');
+
+            document.getElementById('lblGenBase').textContent = kwh;
+            document.getElementById('lblGenRate').textContent = genRate.toFixed(4);
+            document.getElementById('valGen').textContent = genCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('lblTransBase').textContent = kwh;
+            document.getElementById('lblTransRate').textContent = activeRates.transmission.toFixed(4);
+            document.getElementById('valTrans').textContent = transCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('lblSysLossBase').textContent = kwh;
+            document.getElementById('lblSysLossRate').textContent = activeRates.systemLoss.toFixed(4);
+            document.getElementById('valSysLoss').textContent = sysLossCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('lblDistBase').textContent = kwh;
+            document.getElementById('lblDistRate').textContent = distRate.toFixed(4);
+            document.getElementById('valDist').textContent = distCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('lblFixedMeter').textContent = activeRates.meteringFixed.toFixed(2);
+            document.getElementById('lblFixedSupply').textContent = activeRates.supplyFixed.toFixed(2);
+            document.getElementById('valMeterSupply').textContent = (meteringCost + supplyCost).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('lblAwatBase').textContent = kwh;
+            document.getElementById('lblAwatRate').textContent = activeRates.awatRefund.toFixed(4);
+            document.getElementById('valAwat').textContent = awatRefund.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('lblRegResetBase').textContent = kwh;
+            document.getElementById('lblRegResetRate').textContent = (activeRates.regReset || 0).toFixed(4);
+            document.getElementById('valRegReset').textContent = regReset.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('lblSeniorBase').textContent = kwh;
+            document.getElementById('lblSeniorRate').textContent = activeRates.seniorRate.toFixed(4);
+            document.getElementById('valSenior').textContent = seniorCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('lblLftRate').textContent = (activeRates.lftRate * 100).toFixed(2);
+            document.getElementById('lblRptRate').textContent = activeRates.rptRate.toFixed(4);
+            document.getElementById('valVatDetails').textContent = totalVat.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById('valVat').textContent = govTaxesTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            document.getElementById('lblNonVatRate').textContent = (activeRates.universalRate + activeRates.fitAll + activeRates.lifelineRate).toFixed(4);
+            document.getElementById('valNonVat').textContent = nonVatSubsidiesTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            const totalForPct = Math.max(totalBill, 1);
+            const pctGen = Math.max(0, (genCost / totalForPct) * 100);
+            const pctTrans = Math.max(0, (transCost / totalForPct) * 100);
+            const pctSysLoss = Math.max(0, (sysLossCost / totalForPct) * 100);
+            const pctDist = Math.max(0, (distMeralcoTotal / totalForPct) * 100);
+            const pctTaxes = Math.max(0, (govTaxesTotal / totalForPct) * 100);
+            const pctOthers = Math.max(0, ((seniorCost + nonVatSubsidiesTotal + otherCharges) / totalForPct) * 100);
+
+            document.getElementById('barGen').style.width = pctGen + '%';
+            document.getElementById('barTrans').style.width = pctTrans + '%';
+            document.getElementById('barSysLoss').style.width = pctSysLoss + '%';
+            document.getElementById('barDist').style.width = pctDist + '%';
+            document.getElementById('barTaxes').style.width = pctTaxes + '%';
+            document.getElementById('barOthers').style.width = pctOthers + '%';
+
+            document.getElementById('pctGen').textContent = pctGen.toFixed(0) + '%';
+            document.getElementById('pctTrans').textContent = pctTrans.toFixed(0) + '%';
+            document.getElementById('pctSysLoss').textContent = pctSysLoss.toFixed(0) + '%';
+            document.getElementById('pctDist').textContent = pctDist.toFixed(0) + '%';
+            document.getElementById('pctTaxes').textContent = pctTaxes.toFixed(0) + '%';
+            document.getElementById('pctOthers').textContent = pctOthers.toFixed(0) + '%';
+        }
+
+        // Appliance Catalog & Household Load State
+        let applianceCatalog = [];
+        let householdLoadList = [];
+
+        async function fetchApplianceCatalog() {
+            try {
+                let response = await fetch('/api/appliances');
+                if (!response.ok) {
+                    response = await fetch('appliance_db.json');
+                }
+                if (response.ok) {
+                    const data = await response.json();
+                    applianceCatalog = data.appliances || [];
+                    populateCategoryFilter(data.categories);
+                    populateApplianceDropdown();
+                }
+            } catch (err) {
+                console.warn("Failed to fetch appliance catalog:", err);
+            }
+        }
+
+        function populateCategoryFilter(categories) {
+            const catSelect = document.getElementById('applianceCategorySelect');
+            if (!catSelect) return;
+            catSelect.innerHTML = '<option value="ALL">All Categories</option>';
+            const catList = categories || [...new Set(applianceCatalog.map(a => a.category))];
+            catList.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                catSelect.appendChild(opt);
+            });
+        }
+
+        function filterApplianceCategory() {
+            populateApplianceDropdown();
+        }
+
+        function populateApplianceDropdown() {
+            const catSelect = document.getElementById('applianceCategorySelect');
+            const appSelect = document.getElementById('applianceSelect');
+            if (!appSelect) return;
+
+            const selectedCat = catSelect ? catSelect.value : 'ALL';
+            appSelect.innerHTML = '<option value="">-- Choose an appliance --</option>';
+
+            const filtered = selectedCat === 'ALL'
+                ? applianceCatalog
+                : applianceCatalog.filter(a => a.category === selectedCat);
+
+            filtered.forEach(app => {
+                const opt = document.createElement('option');
+                opt.value = app.id || app.name;
+                opt.textContent = `${app.name} (${app.average_wattage}W)`;
+                opt.dataset.wattage = app.average_wattage;
+                opt.dataset.hours = app.default_hours_per_day || 8;
+                opt.dataset.days = app.default_days_per_month || 30;
+                appSelect.appendChild(opt);
+            });
+
+            if (filtered.length > 0) {
+                appSelect.selectedIndex = 1;
+                onApplianceSelected();
+            } else {
+                updateApplianceKwhCalculation();
+            }
+        }
+
+        function onApplianceSelected() {
+            const appSelect = document.getElementById('applianceSelect');
+            if (!appSelect || appSelect.selectedIndex <= 0) return;
+
+            const opt = appSelect.options[appSelect.selectedIndex];
+            const wattage = parseFloat(opt.dataset.wattage) || 0;
+            const hours = parseFloat(opt.dataset.hours) || 8;
+            const days = parseFloat(opt.dataset.days) || 30;
+
+            document.getElementById('applianceWattsInput').value = wattage;
+            document.getElementById('applianceHoursSlider').value = hours;
+            document.getElementById('lblApplianceHours').textContent = hours;
+            document.getElementById('applianceDaysSlider').value = days;
+            document.getElementById('lblApplianceDays').textContent = days;
+
+            updateApplianceKwhCalculation();
+        }
+
+        function updateApplianceKwhCalculation() {
+            const watts = parseFloat(document.getElementById('applianceWattsInput').value) || 0;
+            const hours = parseFloat(document.getElementById('applianceHoursSlider').value) || 0;
+            const days = parseFloat(document.getElementById('applianceDaysSlider').value) || 0;
+
+            const estKwh = (watts * hours * days) / 1000;
+            document.getElementById('applianceEstKwh').textContent = estKwh.toFixed(2);
+            return estKwh;
+        }
+
+        function applyApplianceAsKwh() {
+            const estKwh = updateApplianceKwhCalculation();
+            syncKwhInput(Math.round(estKwh));
+        }
+
+        function addApplianceToLoadList() {
+            const appSelect = document.getElementById('applianceSelect');
+            if (!appSelect || appSelect.selectedIndex <= 0) {
+                alert("Please select an appliance first.");
+                return;
+            }
+
+            const appName = appSelect.options[appSelect.selectedIndex].text.split(' (')[0];
+            const watts = parseFloat(document.getElementById('applianceWattsInput').value) || 0;
+            const hours = parseFloat(document.getElementById('applianceHoursSlider').value) || 0;
+            const days = parseFloat(document.getElementById('applianceDaysSlider').value) || 0;
+
+            const kwh = (watts * hours * days) / 1000;
+
+            householdLoadList.push({
+                id: Date.now(),
+                name: appName,
+                watts: watts,
+                hours: hours,
+                days: days,
+                kwh: kwh
+            });
+
+            renderHouseholdLoadList();
+        }
+
+        function removeHouseholdLoadItem(id) {
+            householdLoadList = householdLoadList.filter(item => item.id !== id);
+            renderHouseholdLoadList();
+        }
+
+        function renderHouseholdLoadList() {
+            const container = document.getElementById('householdLoadItems');
+            const totalLbl = document.getElementById('totalLoadKwh');
+            if (!container) return;
+
+            if (householdLoadList.length === 0) {
+                container.innerHTML = '<p class="text-xs t-muted italic">No appliances added to household list yet.</p>';
+                if (totalLbl) totalLbl.textContent = '0.00 kWh';
+                return;
+            }
+
+            let totalKwh = 0;
+            container.innerHTML = '';
+
+            householdLoadList.forEach(item => {
+                totalKwh += item.kwh;
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center p-2 rounded-lg text-xs';
+                div.style.cssText = 'background: var(--input-bg); border: 1px solid var(--input-border);';
+                div.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="font-medium t-primary">${item.name}</span>
+                        <span class="text-[10px] t-muted">${item.watts}W • ${item.hours}h/day • ${item.days}d/mo</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold t-accent">${item.kwh.toFixed(1)} kWh</span>
+                        <button onclick="removeHouseholdLoadItem(${item.id})" class="t-muted hover:text-red-400 p-1">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            if (totalLbl) totalLbl.textContent = totalKwh.toFixed(2) + ' kWh';
+            syncKwhInput(Math.round(totalKwh));
+        }
+
+        // Run on Startup
+        initRates();
+        fetchRates();
+        fetchApplianceCatalog();
+        calculateBill();
+    </script>
+</body>
+</html>
